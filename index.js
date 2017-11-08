@@ -89,16 +89,16 @@ function build(){
   fs.mkdirSync(buildDir+"/EPUB");
   fs.mkdirSync(buildDir+"/META-INF");
 
-  fs.createReadStream("templates/mimetype").pipe(fs.createWriteStream(buildDir+"/mimetype"));
+  fs.createReadStream(__dirname + "/templates/mimetype").pipe(fs.createWriteStream(buildDir+"/mimetype"));
 
 
   pages.map((page)=>fs.createReadStream(outDir+"/"+page.src).pipe(fs.createWriteStream(buildDir+"/EPUB/"+page.src)));
   assets.map((asset)=>fs.createReadStream(outDir+"/"+asset).pipe(fs.createWriteStream(buildDir+"/EPUB/"+asset)));
 
-  fs.createReadStream("templates/container.xml").pipe(fs.createWriteStream(buildDir+"/META-INF/container.xml"));
+  fs.createReadStream(__dirname + "/templates/container.xml").pipe(fs.createWriteStream(buildDir+"/META-INF/container.xml"));
 
   //Generate title page
-  var _strTitlePage = fs.readFileSync("templates/titlepage.xhtml").toString();
+  var _strTitlePage = fs.readFileSync(__dirname + "/templates/titlepage.xhtml").toString();
   var _LIs = pages.reduce(function(acc, val){
     return acc+"<li><a href='"+val.src+"'>"+val.title+"</a></li>\n";
   }, "");
@@ -112,13 +112,13 @@ function build(){
     _items = _items + "<item id='it"+_i+"' media-type='application/xhtml+xml' href='"+pages[_i].src+"' />\n";
     _spines= _spines+ "<itemref idref='it"+_i+"'/>\n";
   }
-  var _strPackager = fs.readFileSync("templates/package.opf").toString();
+  var _strPackager = fs.readFileSync(__dirname + "/templates/package.opf").toString();
   _strPackager = _strPackager.replace('%TITLE%', EPUB_TITLE);
   _strPackager =_strPackager.replace("%ITEMS%", _items );
   _strPackager = _strPackager.replace("%SPINE%", _spines );
   fs.writeFileSync(buildDir+"/EPUB/package.opf", _strPackager);
 
-  fs.createReadStream("templates/cover.png").pipe(fs.createWriteStream(buildDir+"/EPUB/cover.png"));
+  fs.createReadStream(__dirname + "/templates/cover.png").pipe(fs.createWriteStream(buildDir+"/EPUB/cover.png"));
 }
 
 function archive() {
